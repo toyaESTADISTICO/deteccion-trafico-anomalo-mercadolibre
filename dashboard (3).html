@@ -1,0 +1,997 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard de Detección de Tráfico Anómalo en Mercado Libre</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            color: #333;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .metric {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 10px;
+            border-radius: 5px;
+            flex: 1;
+            text-align: center;
+        }
+        .metric h3 {
+            margin: 0;
+            color: #333;
+        }
+        .metric p {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #0066cc;
+        }
+        .chart {
+            width: 100%;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .tab {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+        }
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+            font-size: 14px;
+        }
+        .tab button:hover {
+            background-color: #ddd;
+        }
+        .tab button.active {
+            background-color: #0066cc;
+            color: white;
+        }
+        .tabcontent {
+            display: none;
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-top: none;
+            animation: fadeEffect 0.5s;
+        }
+        @keyframes fadeEffect {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+            font-size: 12px;
+            color: #777;
+        }
+        .percentage {
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        .characteristic {
+            margin-bottom: 10px;
+        }
+        .metrics {
+            background-color: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+        }
+        .metrics strong {
+            color: #0056b3;
+        }
+        .objective {
+            background-color: #e8f4f8;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+        .objective-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .insight-box {
+            background-color: #e8f4ff;
+            border-left: 4px solid #0066cc;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 3px;
+        }
+        .model-card {
+            background-color: #f9f9f9;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #2ecc71;
+        }
+        .feature-card {
+            background-color: #f9f9f9;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    </style>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <h1>Detección de Tráfico Web Anómalo en Mercado Libre</h1>
+    <p>Dashboard interactivo para visualizar y analizar patrones de tráfico automatizado</p>
+
+    <div class="container">
+        <div class="metric">
+            <h3>Total de solicitudes</h3>
+            <p>120,000</p>
+        </div>
+        <div class="metric">
+            <h3>IPs únicas</h3>
+            <p>84,253</p>
+        </div>
+        <div class="metric">
+            <h3>Sesiones únicas</h3>
+            <p>119,408</p>
+        </div>
+        <div class="metric">
+            <h3>% de tráfico bot</h3>
+            <p>24.5%</p>
+        </div>
+    </div>
+
+    <h2>Análisis de Tráfico Web</h2>
+
+<div class="tab">
+    <!-- Reorganización de pestañas -->
+    <button class="tablinks" onclick="openTab(event, 'Tab1')" id="defaultOpen">1. Análisis Exploratorio - Temporal</button>
+    <button class="tablinks" onclick="openTab(event, 'Tab2')">2. Análisis Exploratorio - Geográfico</button>
+    <button class="tablinks" onclick="openTab(event, 'Tab3')">3. Análisis de Comportamiento</button>
+    <button class="tablinks" onclick="openTab(event, 'Tab4')">4. Características del Modelo</button>
+    <button class="tablinks" onclick="openTab(event, 'Tab5')">5. Modelos Implementados</button>
+    <button class="tablinks" onclick="openTab(event, 'Tab6')">6. Resultados del Modelo</button>
+    <button class="tablinks" onclick="openTab(event, 'Tab7')">7. Perfiles de Bots</button>
+    <button class="tablinks" onclick="openTab(event, 'Tab8')">8. Tráfico Sospechoso</button>
+</div>
+
+    <!-- TAB 1: Análisis Exploratorio - Temporal -->
+    <div id="Tab1" class="tabcontent">
+        <h3>Análisis Exploratorio - Patrones Temporales</h3>
+        
+        <div class="chart">
+            <h3>Distribución de solicitudes por hora del día</h3>
+            <div id="hourChart"></div>
+            <div class="insight-box">
+                <h4>Interpretación:</h4>
+                <ul>
+                    <li><strong>Existe un pico pronunciado de tráfico durante las primeras horas del día (0-4 am)</strong>, lo que es inusual para patrones de tráfico humano normal.</li>
+                    <li>Este comportamiento podría indicar actividad automatizada programada para ejecutarse en horarios de baja carga del servidor.</li>
+                    <li>La concentración de solicitudes en horas no comerciales sugiere una estrategia deliberada para evitar sistemas de detección basados en patrones temporales típicos.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="chart" style="width: 48%;">
+                <h3>Distribución por día de la semana</h3>
+                <div id="dayChart"></div>
+                <div class="insight-box">
+                    <h4>Interpretación:</h4>
+                    <p>La concentración de solicitudes en días laborables, especialmente el lunes (65,000), con ausencia total de tráfico durante fines de semana, sugiere actividad programada siguiendo un horario de trabajo típico, posiblemente para confundirse con el tráfico corporativo normal.</p>
+                </div>
+            </div>
+            <div class="chart" style="width: 48%;">
+                <h3>Códigos de respuesta</h3>
+                <div id="responseChart"></div>
+                <div class="insight-box">
+                    <h4>Interpretación:</h4>
+                    <p>La gran mayoría de las solicitudes reciben código 200 (éxito), lo que indica que están accediendo a recursos válidos. Esto sugiere que posibles atacantes conocen bien la estructura del sitio, no están realizando escaneos aleatorios (que generarían muchos errores 404).</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chart">
+            <h3>Distribución de métodos HTTP</h3>
+            <div id="methodsChart"></div>
+            <div class="insight-box">
+                <h4>Interpretación:</h4>
+                <p>Aproximadamente el 95% de las solicitudes son GET y solo 5% POST. Esta proporción puede ser normal para sitios de e-commerce como Mercado Libre, pero también podría indicar actividades de scraping (que típicamente usan GET).</p>
+            </div>
+        </div>
+        
+        <div class="chart">
+            <h4>Análisis de intervalos temporales</h4>
+            <div id="intervalChart" style="width:100%;height:400px;"></div>
+            <div class="insight-box">
+                <h4>Interpretación:</h4>
+                <ul>
+                    <li>Solo 433 de 119,408 sesiones (0.36%) realizan más de una solicitud</li>
+                    <li>De estas, solo 123 sesiones tienen suficientes solicitudes para calcular una desviación estándar confiable</li>
+                    <li>El umbral de sospecha está en intervalos menores a 0.5 segundos, físicamente imposibles para interacción humana</li>
+                    <li>Se observa un pico significativo en desviaciones estándar muy bajas (cerca de 0), indicando intervalos mecánicamente regulares típicos de automatización</li>
+                </ul>
+                <p><strong>Hallazgo clave:</strong> La estrategia predominante en el tráfico automatizado es realizar una única solicitud por sesión (99.64% de los casos), eludiendo así los sistemas de detección basados en comportamiento intra-sesión.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 2: Análisis Exploratorio - Geográfico -->
+    <div id="Tab2" class="tabcontent">
+        <h3>Análisis Exploratorio - Distribución Geográfica</h3>
+        
+        <div class="chart">
+            <h3>Distribución geográfica del tráfico</h3>
+            <div id="countryChart"></div>
+            <div class="insight-box">
+                <h4>Interpretación:</h4>
+                <p>Destaca la gran proporción de tráfico (30%) proveniente de ubicaciones desconocidas ("??"), probablemente utilizando VPNs o proxies para ocultar su origen real. Este comportamiento es típico de operaciones automatizadas que intentan evadir restricciones geográficas o sistemas de detección basados en origen geográfico.</p>
+            </div>
+        </div>
+
+        <div class="chart">
+            <h3>Países con mayor proporción de tráfico automatizado</h3>
+            <div id="botCountryChart"></div>
+            <div class="insight-box">
+                <h4>Interpretación:</h4>
+                <p>Las conexiones desde ubicaciones desconocidas ("??") muestran la mayor proporción de tráfico automatizado (52%), muy por encima del resto de países. Esto confirma que el uso de VPNs/proxies está fuertemente correlacionado con actividades automatizadas maliciosas.</p>
+            </div>
+        </div>
+        
+        <div class="chart">
+            <h4>Distribución de tipos de bot por país</h4>
+            <div id="botDistributionByCountry"></div>
+            <div class="insight-box">
+                <h4>Interpretación:</h4>
+                <p><strong>Observación clave:</strong> Las IPs con país desconocido ("??") muestran un predominio de Bots API (casi 100%), mientras que en países legítimos existe una distribución más variada con predominio de Crawlers lentos/distribuidos. Esto sugiere que el tráfico más agresivo y directo intenta ocultar su origen geográfico.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 3: Análisis de Comportamiento -->
+    <div id="Tab3" class="tabcontent">
+        <h3>Análisis de Comportamiento por IP y Sesión</h3>
+
+        <div class="chart">
+            <h4>Top 10 IPs con más solicitudes</h4>
+            <table width="100%" border="1" cellpadding="5" cellspacing="0">
+                <tr>
+                    <th>IP</th>
+                    <th>Solicitudes</th>
+                </tr>
+                <tr><td>192.168.0.102</td><td>172</td></tr>
+                <tr><td>192.168.0.187</td><td>170</td></tr>
+                <tr><td>192.168.0.229</td><td>168</td></tr>
+                <tr><td>192.168.0.83</td><td>166</td></tr>
+                <tr><td>192.168.0.12</td><td>166</td></tr>
+                <tr><td>192.168.0.132</td><td>164</td></tr>
+                <tr><td>192.168.0.28</td><td>164</td></tr>
+                <tr><td>192.168.0.219</td><td>163</td></tr>
+                <tr><td>192.168.0.43</td><td>163</td></tr>
+                <tr><td>192.168.0.44</td><td>162</td></tr>
+            </table>
+            <div class="insight-box">
+                <h4>Interpretación:</h4>
+                <p>La distribución de solicitudes por IP muestra una clara estrategia de distribución de tráfico automatizado. Las IPs top tienen cantidades muy similares de solicitudes (162-172), sugiriendo una configuración deliberada para mantenerse por debajo de umbrales típicos de detección.</p>
+            </div>
+        </div>
+
+        <div class="chart">
+            <h4>Top 10 User Agents</h4>
+            <table width="100%" border="1" cellpadding="5" cellspacing="0">
+                <tr>
+                    <th>User Agent</th>
+                    <th>Solicitudes</th>
+                </tr>
+                <tr><td>Mozilla/5.0 (Linux; Android 11; Pixel 5)</td><td>20060</td></tr>
+                <tr><td>Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)</td><td>20024</td></tr>
+                <tr><td>Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X)</td><td>19955</td></tr>
+                <tr><td>Mozilla/5.0 (Windows NT 10.0; Win64; x64)</td><td>19943</td></tr>
+                <tr><td>python-requests/2.25.1</td><td>9046</td></tr>
+                <tr><td>Go-http-client/1.1</td><td>9024</td></tr>
+                <tr><td>Scrapy/2.5.0 (+https://scrapy.org)</td><td>8980</td></tr>
+                <tr><td>curl/7.68.0</td><td>8950</td></tr>
+                <tr><td>Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7; rv:85.0) Gecko/20100101 Firefox/85.0</td><td>2030</td></tr>
+                <tr><td>Mozilla/5.0 (Windows NT 10.0; Win64; x64) HeadlessChrome/90.0</td><td>1988</td></tr>
+            </table>
+            <div class="insight-box">
+                <h4>Interpretación:</h4>
+                <p><strong>Evidencia clara de automatización:</strong> Entre los 10 principales user-agents, 5 son claramente herramientas automatizadas:</p>
+                <ul>
+                    <li><strong>python-requests/2.25.1</strong> (9,046 solicitudes)</li>
+                    <li><strong>Go-http-client/1.1</strong> (9,024 solicitudes)</li>
+                    <li><strong>Scrapy/2.5.0</strong> (8,980 solicitudes) - un framework explícito de web scraping</li>
+                    <li><strong>curl/7.68.0</strong> (8,950 solicitudes)</li>
+                    <li><strong>HeadlessChrome/90.0</strong> (1,988 solicitudes) - navegador sin interfaz gráfica comúnmente usado para automatización</li>
+                </ul>
+                <p>Aproximadamente un tercio del tráfico utiliza user-agents claramente automatizados, una señal inequívoca de tráfico no humano.</p>
+            </div>
+        </div>
+
+        <div class="chart">
+            <h4>Top 10 URLs visitadas</h4>
+            <table width="100%" border="1" cellpadding="5" cellspacing="0">
+                <tr>
+                    <th>URL</th>
+                    <th>Solicitudes</th>
+                </tr>
+                <tr><td>/orders</td><td>7442</td></tr>
+                <tr><td>/profile</td><td>7318</td></tr>
+                <tr><td>/checkout</td><td>7304</td></tr>
+                <tr><td>/item/67890</td><td>7293</td></tr>
+                <tr><td>/item/12345</td><td>7272</td></tr>
+                <tr><td>/search?q=celular</td><td>7263</td></tr>
+                <tr><td>/home</td><td>7239</td></tr>
+                <tr><td>/cart</td><td>7169</td></tr>
+                <tr><td>/search?q=notebook</td><td>7168</td></tr>
+                <tr><td>/category/electronics</td><td>7143</td></tr>
+            </table>
+            <div class="insight-box">
+                <h4>Interpretación:</h4>
+                <p>La distribución sorprendentemente uniforme entre las URLs más visitadas (todas entre 7,100-7,400 solicitudes) indica un escaneo sistemático de todos los principales endpoints de la plataforma. Esta uniformidad no es natural en el comportamiento humano, donde ciertos endpoints suelen ser significativamente más populares que otros.</p>
+            </div>
+        </div>
+        
+        <div class="chart">
+            <h4>Distribución de solicitudes por sesión</h4>
+            <div id="sessionRequestsChart"></div>
+            <div class="insight-box">
+                <h4>Interpretación:</h4>
+                <p>Este patrón es inusual para un sitio de e-commerce donde los usuarios legítimos típicamente navegan por múltiples páginas. Sugiere posible técnica de evasión de detección donde los bots generan nuevas sesiones continuamente para evitar el seguimiento.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 4: Características del Modelo -->
+    <div id="Tab4" class="tabcontent">
+        <h3>Características del Modelo</h3>
+        
+        <div class="feature-card">
+            <h3>Características de comportamiento temporal</h3>
+            <ul>
+                <li><strong>requests_per_second:</strong> Los bots suelen realizar peticiones mucho más rápido que humanos</li>
+                <li><strong>interval_uniformity:</strong> Baja variabilidad en los intervalos entre peticiones indica automatización</li>
+                <li><strong>session_duration:</strong> Sesiones muy cortas o muy largas pueden ser sospechosas</li>
+            </ul>
+        </div>
+        
+        <div class="feature-card">
+            <h3>Características de comportamiento de navegación</h3>
+            <ul>
+                <li><strong>url_entropy:</strong> Los humanos tienen patrones de navegación más impredecibles</li>
+                <li><strong>repetitive_patterns:</strong> Los scrapers suelen tener patrones cíclicos de navegación</li>
+                <li><strong>unique_urls:</strong> Ratio de URLs únicas respecto al total de peticiones</li>
+            </ul>
+        </div>
+        
+        <div class="feature-card">
+            <h3>Características técnicas</h3>
+            <ul>
+                <li><strong>bot_ua_ratio:</strong> Detección directa de User-Agents conocidos de bots</li>
+                <li><strong>error_ratio:</strong> Bots pueden generar más errores que usuarios legítimos</li>
+                <li><strong>api_req_ratio:</strong> Los scrapers suelen enfocarse en APIs o ignorarlas por completo</li>
+            </ul>
+        </div>
+        
+        <div class="feature-card">
+            <h3>Características de consistencia</h3>
+            <ul>
+                <li><strong>ip_count:</strong> Cambios de IP durante una sesión pueden indicar proxies rotatorios</li>
+                <li><strong>ua_count:</strong> Cambios de User-Agent durante una sesión son altamente sospechosos</li>
+                <li><strong>country_count:</strong> Cambios geográficos rápidos son indicativos de VPN o proxies</li>
+            </ul>
+        </div>
+        
+        <div class="chart">
+            <h3>Características específicas para diferentes tipos de tráfico</h3>
+            <table width="100%" border="1" cellpadding="5" cellspacing="0">
+                <tr>
+                    <th>Tipo de tráfico</th>
+                    <th>Características específicas</th>
+                </tr>
+                <tr>
+                    <td>Sesiones de un solo disparo</td>
+                    <td>Análisis detallado de URL y User-Agent para sesiones individuales</td>
+                </tr>
+                <tr>
+                    <td>Análisis multi-sesión por IP</td>
+                    <td>Detección de patrones a través de múltiples sesiones que podrían indicar estrategias de evasión</td>
+                </tr>
+                <tr>
+                    <td>User-Agent</td>
+                    <td>Análisis más detallado de las cadenas de User-Agent con detección de características sospechosas</td>
+                </tr>
+                <tr>
+                    <td>Análisis de bytes</td>
+                    <td>Características adicionales sobre el tamaño de respuesta (min, max, mediana, rango)</td>
+                </tr>
+                <tr>
+                    <td>Clasificación de URL</td>
+                    <td>Categorización granular de tipos de recursos solicitados</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- TAB 5: Modelos Implementados -->
+    <div id="Tab5" class="tabcontent">
+        <h3>Modelos Implementados para Detección</h3>
+        
+        <div class="model-card">
+            <h4>Enfoque Híbrido de Tres Capas</h4>
+            <p>Implementamos un enfoque multicapa que combina múltiples técnicas para maximizar la precisión de detección y minimizar falsos positivos:</p>
+            
+            <div class="metrics">
+                <h4>Capa 1: Sistema basado en reglas</h4>
+                <ul>
+                    <li><strong>Objetivo:</strong> Detección rápida de comportamientos claramente automatizados</li>
+                    <li><strong>Método:</strong> Reglas heurísticas basadas en umbrales para identificar comportamientos imposibles para humanos</li>
+                    <li><strong>Ejemplos:</strong> 
+                        <ul>
+                            <li>User-Agents claramente de bot (python-requests, curl, etc.)</li>
+                            <li>Intervalos entre solicitudes físicamente imposibles (&lt;200ms)</li>
+                            <li>Patrones perfectamente uniformes en tiempos de solicitud</li>
+                        </ul>
+                    </li>
+                    <li><strong>Ventaja:</strong> Alta precisión para casos evidentes, rapidez de ejecución</li>
+                </ul>
+            </div>
+            
+            <div class="metrics">
+                <h4>Capa 2: Modelo no supervisado (Isolation Forest)</h4>
+                <ul>
+                    <li><strong>Objetivo:</strong> Detección de anomalías generales y patrones atípicos</li>
+                    <li><strong>Método:</strong> Algoritmo de Isolation Forest entrenado con datos de tráfico legítimo</li>
+                    <li><strong>Características utilizadas:</strong> 
+                        <ul>
+                            <li>Patrones temporales (varianza de intervalos, duración de sesión)</li>
+                            <li>Comportamiento de navegación (entropía de URL, repetición de patrones)</li>
+                            <li>Características técnicas (tamaños de respuesta, métodos HTTP)</li>
+                        </ul>
+                    </li>
+                    <li><strong>Ventaja:</strong> Capacidad para detectar comportamientos anómalos desconocidos previamente</li>
+                </ul>
+            </div>
+            
+            <div class="metrics">
+                <h4>Capa 3: Modelo supervisado (Gradient Boosting)</h4>
+                <ul>
+                    <li><strong>Objetivo:</strong> Clasificación precisa basada en patrones conocidos de tráfico bot</li>
+                    <li><strong>Método:</strong> XGBoost entrenado con etiquetas generadas por las capas anteriores</li>
+                    <li><strong>Proceso:</strong> 
+                        <ul>
+                            <li>Generación de etiquetas sintéticas a partir de las capas 1 y 2</li>
+                            <li>Entrenamiento supervisado con validación cruzada</li>
+                            <li>Ajuste fino de hiperparámetros mediante búsqueda en rejilla</li>
+                        </ul>
+                    </li>
+                    <li><strong>Ventaja:</strong> Alta precisión y capacidad para capturar patrones complejos</li>
+                </ul>
+            </div>
+            
+            <div class="objective">
+                <div class="objective-title">Beneficios del enfoque multicapa:</div>
+                <ul>
+                    <li>Detectar comportamientos claramente automatizados de forma inmediata</li>
+                    <li>Identificar anomalías sutiles que no encajen en patrones conocidos</li>
+                    <li>Mejorar la precisión mediante retroalimentación y etiquetado progresivo</li>
+                    <li>Adaptabilidad a nuevas técnicas de evasión mediante actualización de modelos</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 6: Resultados del Modelo -->
+    <div id="Tab6" class="tabcontent">
+        <h3>Resultados y Rendimiento del Modelo</h3>
+        
+        <div class="container">
+            <div class="chart" style="width: 48%;">
+                <h3>Métricas globales</h3>
+                <ul>
+                    <li><strong>Accuracy</strong>: 96.78%</li>
+                    <li><strong>Precision</strong>: 95.27%</li>
+                    <li><strong>Recall</strong>: 92.07%</li>
+                    <li><strong>F1 Score</strong>: 93.64%</li>
+                    <li><strong>ROC AUC</strong>: 0.9940</li>
+                    <li><strong>PR AUC</strong>: 0.9837</li>
+                </ul>
+                <div class="insight-box">
+                    <h4>Interpretación:</h4>
+                    <p>El modelo muestra un rendimiento excelente con un F1 Score superior al 93%, lo que indica un equilibrio óptimo entre precision y recall. El alto valor de ROC AUC (0.994) confirma la robustez del modelo para distinguir entre tráfico legítimo y automatizado.</p>
+                </div>
+            </div>
+            <div class="chart" style="width: 48%;">
+                <h3>Matriz de Confusión</h3>
+                <div id="confusionMatrix"></div>
+                <div class="insight-box">
+                    <h4>Interpretación:</h4>
+                    <p>La matriz muestra que el modelo identifica correctamente 82,267 instancias de tráfico normal y 28,298 instancias de bots. Los falsos positivos (1,406) y falsos negativos (2,437) son relativamente bajos, priorizando minimizar los falsos positivos para evitar bloquear tráfico legítimo.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart">
+            <h3>Rendimiento por tipo de bot</h3>
+            <table width="100%" border="1" cellpadding="5" cellspacing="0">
+                <tr>
+                    <th>Tipo</th>
+                    <th>Precision</th>
+                    <th>Recall</th>
+                    <th>F1</th>
+                </tr>
+                <tr>
+                    <td>Scrapers alta velocidad</td>
+                    <td>0.9897</td>
+                    <td>0.9995</td>
+                    <td>0.9962</td>
+                </tr>
+                <tr>
+                    <td>Bots API</td>
+                    <td>0.9687</td>
+                    <td>0.9993</td>
+                    <td>0.9841</td>
+                </tr>
+                <tr>
+                    <td>Crawlers lentos</td>
+                    <td>0.9339</td>
+                    <td>0.9923</td>
+                    <td>0.9634</td>
+                </tr>
+                <tr>
+                    <td>Bots navegación repetitiva</td>
+                    <td>1.0000</td>
+                    <td>1.0000</td>
+                    <td>0.9984</td>
+                </tr>
+            </table>
+            <div class="insight-box">
+                <h4>Interpretación:</h4>
+                <p>El modelo muestra un excelente rendimiento a través de todos los tipos de bots, con F1 superior a 0.96 en todos los casos. Destaca especialmente la detección de "Bots de navegación repetitiva" (F1 = 0.9984), probablemente debido a sus patrones de comportamiento altamente distintos del tráfico humano normal.</p>
+            </div>
+        </div>
+        
+        <div class="chart">
+            <h3>Efectividad por característica</h3>
+            <div id="featureImportanceChart"></div>
+            <div class="insight-box">
+                <h4>Interpretación:</h4>
+                <p>Las características más discriminantes para la detección son:</p>
+                <ol>
+                    <li><strong>Uniformidad de intervalos</strong>: El patrón mecánico de tiempos entre solicitudes es el indicador más potente</li>
+                    <li><strong>User-Agent</strong>: La presencia de user-agents de herramientas automatizadas</li>
+                    <li><strong>Entropía de URL</strong>: Navegación con patrones mecánicos vs. comportamiento humano más errático</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 7: Perfiles de Bots -->
+    <div id="Tab7" class="tabcontent">
+        <h3>Perfiles de tráfico automatizado detectados</h3>
+
+        <div class="chart">
+            <h3>Tipos de bots identificados</h3>
+            <div id="botTypeChart"></div>
+            <div class="insight-box">
+                <h4>Interpretación:</h4>
+                <p>Se identificaron cuatro perfiles distintos de bots, con clara predominancia de "Bots API" (61.86%). Esta distribución sugiere una preferencia por métodos directos y eficientes de extracción de datos sobre técnicas más sofisticadas de evasión.</p>
+            </div>
+
+            <h2>Tipología de Bots Detectados</h2>
+
+            <h3>1. Scrapers de alta velocidad <span class="percentage">(7.28%)</span></h3>
+            <div class="characteristic">
+                <p>Utilizan navegadores reales o emulan sus características para extraer datos rápidamente.</p>
+            </div>
+            <div class="metrics">
+                <ul>
+                    <li><strong>has_browser:</strong> 1273% mayor que la media</li>
+                    <li><strong>is_business_hour:</strong> 190% mayor que la media</li>
+                    <li><strong>has_platform:</strong> 169% mayor que la media</li>
+                    <li>Presentan consistencia en el tamaño de respuestas (baja variabilidad)</li>
+                </ul>
+            </div>
+            <div class="objective">
+                <div class="objective-title">Objetivo probable:</div>
+                <p>Extracción rápida de datos específicos (precios, productos)</p>
+            </div>
+
+            <h3>2. Bots API <span class="percentage">(61.86%) - El grupo dominante</span></h3>
+            <div class="characteristic">
+                <p>Extremadamente simplificados y directos en sus solicitudes. No utilizan navegadores convencionales ni incluyen parámetros complejos.</p>
+            </div>
+            <div class="metrics">
+                <ul>
+                    <li><strong>url_entropy:</strong> 100% menor que la media</li>
+                    <li><strong>interval_uniformity:</strong> 100% menor que la media</li>
+                    <li><strong>page_req_ratio:</strong> 100% menor que la media</li>
+                    <li>Alta predictibilidad en patrones de acceso</li>
+                </ul>
+            </div>
+            <div class="objective">
+                <div class="objective-title">Objetivo probable:</div>
+                <p>Consultas automatizadas para extracción masiva de datos estructurados</p>
+            </div>
+
+            <h3>3. Crawlers lentos/distribuidos <span class="percentage">(29.78%)</span></h3>
+            <div class="characteristic">
+                <p>Comportamiento más similar a navegación humana pero sistemático, con diversificación en tipos de páginas visitadas.</p>
+            </div>
+            <div class="metrics">
+                <ul>
+                    <li><strong>param_count:</strong> 233% mayor que la media</li>
+                    <li><strong>has_query_params:</strong> 233% mayor que la media</li>
+                    <li><strong>search_req_ratio:</strong> 233% mayor que la media</li>
+                    <li>Diversificación en tipos de páginas visitadas (checkout, búsqueda, páginas regulares)</li>
+                </ul>
+            </div>
+            <div class="objective">
+                <div class="objective-title">Objetivo probable:</div>
+                <p>Indexación completa o monitoreo de cambios en productos/precios</p>
+            </div>
+
+            <h3>4. Bots de navegación repetitiva <span class="percentage">(1.08%)</span></h3>
+            <div class="characteristic">
+                <p>Comportamiento más sofisticado que simula navegación humana errática, con mayor complejidad en patrones de solicitudes.</p>
+            </div>
+            <div class="metrics">
+                <ul>
+                    <li><strong>url_entropy:</strong> 9188% mayor que la media</li>
+                    <li><strong>interval_uniformity:</strong> 9188% mayor que la media</li>
+                    <li><strong>range_bytes:</strong> 9183% mayor que la media</li>
+                    <li>Mayor complejidad en patrones de solicitudes y visitas a múltiples recursos</li>
+                </ul>
+            </div>
+            <div class="objective">
+                <div class="objective-title">Objetivo probable:</div>
+                <p>Evasión de sistemas de detección avanzados mediante simulación de comportamiento humano impredecible</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 8: Tráfico Sospechoso -->
+    <div id="Tab8" class="tabcontent">
+        <h3>Identificación de ejemplos concretos de tráfico sospechoso</h3>
+
+        <div class="chart">
+            <h4>IPs con mayor actividad sospechosa</h4>
+            <table width="100%" border="1" cellpadding="5" cellspacing="0">
+                <tr>
+                    <th>IP (país)</th>
+                    <th>Sesiones de bot</th>
+                    <th>% del total</th>
+                </tr>
+                <tr><td>192.168.0.102 (??)</td><td>172</td><td>100.0%</td></tr>
+                <tr><td>192.168.0.187 (??)</td><td>170</td><td>100.0%</td></tr>
+                <tr><td>192.168.0.229 (??)</td><td>168</td><td>100.0%</td></tr>
+                <tr><td>192.168.0.83 (??)</td><td>166</td><td>100.0%</td></tr>
+                <tr><td>192.168.0.12 (??)</td><td>165</td><td>99.4%</td></tr>
+                <tr><td>192.168.0.132 (??)</td><td>164</td><td>100.0%</td></tr>
+                <tr><td>192.168.0.28 (??)</td><td>163</td><td>99.4%</td></tr>
+                <tr><td>192.168.0.219 (??)</td><td>162</td><td>99.4%</td></tr>
+                <tr><td>192.168.0.43 (??)</td><td>162</td><td>99.4%</td></tr>
+                <tr><td>192.168.0.92 (??)</td><td>162</td><td>100.0%</td></tr>
+            </table>
+        </div>
+
+        <div class="chart">
+            <h4>Caso de estudio: IP 192.168.0.102</h4>
+            <div style="display: flex; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 300px;">
+                    <h5>Perfil general:</h5>
+                    <ul>
+                        <li><strong>Total de sesiones:</strong> 172</li>
+                        <li><strong>Sesiones clasificadas como bot:</strong> 172 (100%)</li>
+                        <li><strong>País de origen:</strong> Desconocido (??)</li>
+                    </ul>
+
+                    <h5>Distribución por tipo de bot:</h5>
+                    <ul>
+                        <li>Scrapers de alta velocidad: 0 (0.0%)</li>
+                        <li>Bots API: 170 (98.8%)</li>
+                        <li>Crawlers lentos/distribuidos: 0 (0.0%)</li>
+                        <li>Bots de navegación repetitiva: 2 (1.2%)</li>
+                    </ul>
+                </div>
+
+                <div style="flex: 1; min-width: 300px;">
+                    <h5>User-Agents utilizados:</h5>
+                    <ol>
+                        <li>curl/7.68.0</li>
+                        <li>Scrapy/2.5.0 (+https://scrapy.org)</li>
+                        <li>python-requests/2.25.1</li>
+                        <li>Go-http-client/1.1</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div>
+                <h5>Interpretación:</h5>
+                <p>Esta IP representa un caso claro de actividad automatizada para extracción de datos. Los indicadores principales son:</p>
+                <ul>
+                    <li>Uso exclusivo de herramientas de automatización como user-agents (curl, Scrapy, python-requests, Go-http-client)</li>
+                    <li>Distribución abrumadora de solicitudes clasificadas como "Bots API" (98.8%), indicando acceso directo y sistemático a endpoints</li>
+                    <li>Origen geográfico desconocido (país "??"), sugiriendo posible uso de proxy o VPN para ocultar ubicación real</li>
+                    <li>Patrón de una solicitud por sesión, técnica típica para evadir sistemas de detección basados en comportamiento de sesión</li>
+                </ul>
+                <p>Este perfil corresponde a una operación de scraping avanzada que emplea múltiples herramientas de automatización y técnicas de evasión para extraer datos sistemáticamente de la plataforma.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p><strong>Desarrollado por:</strong> Andrés Felipe Montoya Morales | <strong>Contacto:</strong> 3116225298</p>
+        <p><em>Dashboard interactivo desarrollado como complemento para la prueba técnica de Científico de Datos en Ciberseguridad para Mercado Libre, Mayo 2025.</em></p>
+    </div>
+
+    <script>
+        // Tab functionality
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Hour distribution chart
+    var hourData = [{
+        x: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+        y: [11000, 11200, 11100, 10800, 10500, 3800, 3700, 3600, 3700, 3800, 3700, 3800, 3900, 3800, 3700, 3400, 3200, 3100, 2900, 2800, 3000, 3100, 3000, 2900],
+        type: 'bar',
+        marker: {color: '#4e73df'}
+    }];
+    var hourLayout = {
+        title: 'Distribución por hora del día',
+        xaxis: {title: 'Hora del día'},
+        yaxis: {title: 'Número de solicitudes'}
+    };
+    Plotly.newPlot('hourChart', hourData, hourLayout);
+
+    // Day distribution chart
+    var dayData = [{
+        x: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
+        y: [65000, 18000, 17000, 17000, 3000, 0, 0],
+        type: 'bar',
+        marker: {color: '#1cc88a'}
+    }];
+    var dayLayout = {
+        title: 'Distribución por día de la semana',
+        xaxis: {title: 'Día de la semana'},
+        yaxis: {title: 'Número de solicitudes'}
+    };
+    Plotly.newPlot('dayChart', dayData, dayLayout);
+
+    // Response code chart
+    var responseData = [{
+        x: ['200', '404', '500', '302'],
+        y: [110000, 5000, 4000, 1000],
+        type: 'bar',
+        marker: {color: '#36b9cc'}
+    }];
+    var responseLayout = {
+        title: 'Distribución de códigos de respuesta',
+        xaxis: {title: 'Código HTTP'},
+        yaxis: {title: 'Número de solicitudes'}
+    };
+    Plotly.newPlot('responseChart', responseData, responseLayout);
+    
+    // HTTP Methods chart
+    var methodsData = [{
+        labels: ['GET', 'POST', 'Otros'],
+        values: [95, 5, 0],
+        type: 'pie',
+        marker: {
+            colors: ['#4e73df', '#1cc88a', '#36b9cc']
+        }
+    }];
+    var methodsLayout = {
+        title: 'Distribución de métodos HTTP',
+    };
+    Plotly.newPlot('methodsChart', methodsData, methodsLayout);
+
+    // Session requests distribution chart
+    var sessionReqData = [{
+        x: ['1', '2-5', '6-10', '11-20', '21+'],
+        y: [119061, 256, 73, 11, 7],
+        type: 'bar',
+        marker: {color: '#f6c23e'}
+    }];
+    var sessionReqLayout = {
+        title: 'Distribución de solicitudes por sesión',
+        xaxis: {title: 'Número de solicitudes'},
+        yaxis: {title: 'Número de sesiones', type: 'log'}
+    };
+    Plotly.newPlot('sessionRequestsChart', sessionReqData, sessionReqLayout);
+
+    // Bot type chart
+    var botTypeData = [{
+        values: [7.28, 61.86, 29.78, 1.08],
+        labels: ['Scrapers alta velocidad', 'Bots API', 'Crawlers lentos', 'Bots navegación repetitiva'],
+        type: 'pie',
+        marker: {colors: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e']}
+    }];
+    var botTypeLayout = {
+        title: 'Tipos de bots detectados'
+    };
+    Plotly.newPlot('botTypeChart', botTypeData, botTypeLayout);
+
+    // Country distribution chart
+    var countryData = [{
+        x: ['??', 'CL', 'AR', 'US', 'UY', 'BR'],
+        y: [36000, 17000, 17000, 17000, 17000, 16000],
+        type: 'bar',
+        marker: {color: '#4e73df'}
+    }];
+    var countryLayout = {
+        title: 'Tráfico por país',
+        xaxis: {title: 'País'},
+        yaxis: {title: 'Número de solicitudes'}
+    };
+    Plotly.newPlot('countryChart', countryData, countryLayout);
+
+    // Bot country proportion chart
+    var botCountryData = [{
+        x: ['??', 'US', 'AR', 'UY', 'CL', 'BR'],
+        y: [0.52, 0.13, 0.125, 0.123, 0.122, 0.12],
+        type: 'bar',
+        marker: {color: '#e74a3b'}
+    }];
+    var botCountryLayout = {
+        title: 'Proporción de tráfico automatizado por país',
+        xaxis: {title: 'País'},
+        yaxis: {title: 'Proporción de tráfico bot'}
+    };
+    Plotly.newPlot('botCountryChart', botCountryData, botCountryLayout);
+
+    // Feature importance chart
+    var featureData = [{
+        y: ['interval_uniformity', 'user_agent_type', 'url_entropy', 'session_duration', 'unique_urls_ratio', 'requests_per_second', 'error_rate'],
+        x: [0.32, 0.25, 0.18, 0.10, 0.08, 0.05, 0.02],
+        type: 'bar',
+        orientation: 'h',
+        marker: {color: '#4e73df'}
+    }];
+    var featureLayout = {
+        title: 'Importancia de características en el modelo',
+        xaxis: {title: 'Importancia relativa'},
+        yaxis: {title: 'Característica', automargin: true}
+    };
+    Plotly.newPlot('featureImportanceChart', featureData, featureLayout);
+
+    // Gráfica de intervalos entre solicitudes
+    var intervalData = [{
+        x: [0, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500, 6000, 6500, 7000, 7500, 8000],
+        y: [11, 14, 6, 3, 10, 8, 12, 9, 8, 5, 4, 3, 1, 0, 1, 0, 1],
+        type: 'bar',
+        marker: {color: '#f6c23e'}
+    }];
+
+    var intervalLayout = {
+        title: 'Distribución de desviación estándar de intervalos entre solicitudes por sesión',
+        xaxis: {title: 'Desviación estándar (segundos)'},
+        yaxis: {title: 'Frecuencia'},
+        shapes: [{
+            type: 'line',
+            x0: 500,
+            y0: 0,
+            x1: 500,
+            y1: 14,
+            line: {
+                color: 'red',
+                width: 2,
+                dash: 'dash'
+            }
+        }],
+        annotations: [{
+            x: 500,
+            y: 14,
+            xref: 'x',
+            yref: 'y',
+            text: 'Umbral de sospecha: 0.5 segundos',
+            showarrow: true,
+            arrowhead: 2,
+            ax: 20,
+            ay: -30,
+            font: {color: 'red'}
+        }]
+    };
+
+    Plotly.newPlot('intervalChart', intervalData, intervalLayout);
+
+    // Bot distribution by country
+    var botDistData = [{
+        x: ['??', 'US', 'AR', 'UY', 'CL', 'BR'],
+        y: [98, 20, 19, 20, 20, 20],
+        name: 'Bots API',
+        type: 'bar',
+        marker: {color: '#1cc88a'}
+    }, {
+        x: ['??', 'US', 'AR', 'UY', 'CL', 'BR'],
+        y: [1, 80, 81, 80, 80, 80],
+        name: 'Crawlers lentos',
+        type: 'bar',
+        marker: {color: '#36b9cc'}
+    }, {
+        x: ['??', 'US', 'AR', 'UY', 'CL', 'BR'],
+        y: [1, 0, 0, 0, 0, 0],
+        name: 'Bots navegación',
+        type: 'bar',
+        marker: {color: '#f6c23e'}
+    }];
+
+    var botDistLayout = {
+        barmode: 'stack',
+        title: 'Distribución de tipos de bot por país',
+        xaxis: {title: 'País'},
+        yaxis: {title: 'Porcentaje (%)'}
+    };
+
+    Plotly.newPlot('botDistributionByCountry', botDistData, botDistLayout);
+
+    // Confusion matrix chart
+    var confusionData = [{
+        z: [[82267, 1406], [2437, 28298]],
+        x: ['Normal', 'Bot'],
+        y: ['Normal', 'Bot'],
+        type: 'heatmap',
+        colorscale: 'Blues',
+        showscale: false,
+        text: [[82267, 1406], [2437, 28298]],
+        texttemplate: '%{text}',
+        textfont: {color: 'white'}
+    }];
+    var confusionLayout = {
+        title: 'Matriz de Confusión',
+        xaxis: {title: 'Predicción'},
+        yaxis: {title: 'Valor Real'}
+    };
+    Plotly.newPlot('confusionMatrix', confusionData, confusionLayout);
+
+    // Open default tab
+    document.getElementById("defaultOpen").click();
+});
+    </script>
+</body>
+</html>
